@@ -1,0 +1,29 @@
+package {{packageName}}
+
+{{! Import sections }}
+{{#hasImports}}
+import (
+{{#imports}}
+    "{{importValue}}"
+{{/imports}}
+)
+
+{{/hasImports}}
+{{! Enum Section }}
+{{#isEnum}}
+type {{structName}} {{enumType}}
+
+const (
+    {{#enums}}
+    {{enumConstName}} {{structName}} = "{{enumStringValue}}"
+    {{/enums}}
+)
+{{/isEnum}}
+{{! Object Section }}
+{{^isEnum}}
+type {{structName}} struct {
+{{#properties}}
+    {{titeledAttributeName}} {{attributeType}} `json:"{{attributeName}}"` {{#attributeExample}}// Example: {{attributeExample}}{{/attributeExample}}{{#attributeDescription}} - {{attributeDescription}} {{/attributeDescription}}
+{{/properties}}
+}
+{{/isEnum}}
