@@ -18,6 +18,7 @@ type Payload struct {
 	Type string `yaml:"type"`
 	//Properties map[string]interface{} `json:"properties"`
 	Properties map[string]Property `yaml:"properties"`
+	Required   []string            `yaml:"required,omitempty"`
 }
 
 type Property struct {
@@ -38,4 +39,5 @@ type Schema struct {
 	Example    string              `yaml:"example,omitempty"`
 	Pattern    string              `yaml:"pattern,omitempty"`
 	Properties map[string]Property `yaml:"properties"`
+	Required   []string            `yaml:"required,omitempty"`
 }

@@ -23,7 +23,7 @@ const (
 {{^isEnum}}
 type {{structName}} struct {
 {{#properties}}
-    {{titeledAttributeName}} {{attributeType}} `json:"{{attributeName}}"` {{#attributeExample}}// Example: {{attributeExample}}{{/attributeExample}}{{#attributeDescription}} - {{attributeDescription}} {{/attributeDescription}}
+    {{titeledAttributeName}} {{^required}}*{{/required}}{{attributeType}} `json:"{{attributeName}}"` {{#attributeExample}}// Example: {{attributeExample}}{{/attributeExample}}{{#attributeDescription}} - {{attributeDescription}} {{/attributeDescription}}
 {{/properties}}
 }
 {{/isEnum}}

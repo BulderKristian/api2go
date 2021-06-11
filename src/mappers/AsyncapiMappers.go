@@ -13,7 +13,7 @@ func MapMessageToModel(message models.Message, messageName string) map[string]in
 	modelMap := make(map[string]interface{}, 0)
 	payload := message.Payload
 	for propertyName, property := range payload.Properties {
-		imports, properties = MapPropertiesToModel(propertyName, property, imports, properties)
+		imports, properties = MapPropertiesToModel(propertyName, property, imports, properties, payload.Required)
 	}
 	if len(imports) > 0 {
 		modelMap["hasImports"] = true
@@ -31,7 +31,7 @@ func MapSchemaToModel(schema models.Schema, schemaName string) map[string]interf
 	imports := make([]map[string]string, 0)
 	properties := make([]map[string]interface{}, 0)
 	for propertyName, property := range schema.Properties {
-		imports, properties = MapPropertiesToModel(propertyName, property, imports, properties)
+		imports, properties = MapPropertiesToModel(propertyName, property, imports, properties, schema.Required)
 	}
 	if len(imports) > 0 {
 		modelMap["hasImports"] = true
@@ -44,8 +44,16 @@ func MapSchemaToModel(schema models.Schema, schemaName string) map[string]interf
 	return modelMap
 }
 
-func MapPropertiesToModel(propertyName string, property models.Property, imports []map[string]string, properties []map[string]interface{}) ([]map[string]string, []map[string]interface{}) {
+func MapPropertiesToModel(propertyName string, property models.Property, imports []map[string]string, properties []map[string]interface{}, requiredProperties []string) ([]map[string]string, []map[string]interface{}) {
 	propertyMap := make(map[string]interface{}, 0)
+	isRequired := false
+	for _, requiredProperty := range requiredProperties {
+		if requiredProperty == propertyName {
+			isRequired = true
+			break
+		}
+	}
+	propertyMap["required"] = isRequired
 	propertyMap["titeledAttributeName"] = strings.Title(propertyName)
 	propertyMap["attributeName"] = propertyName
 	if property.Type == "" && property.Ref != "" {
