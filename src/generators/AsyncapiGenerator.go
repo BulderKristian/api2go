@@ -5,7 +5,7 @@ import (
 	"github.com/codedevstem/api2go/src/models"
 )
 
-func GenerateModelMaps(asyncApiModel models.AsyncApi) map[string]interface{} {
+func GenerateAsyncModelMaps(asyncApiModel models.AsyncApi) map[string]interface{} {
 	modelsMap := make(map[string]interface{}, 0)
 	messages := asyncApiModel.Components.Messages
 	if messages != nil {

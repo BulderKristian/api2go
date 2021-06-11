@@ -34,7 +34,7 @@ var (
 )
 
 func runCommand() {
-	templateContent, err := models.ValidateAndParseSchemaType(schemaType)
+	templatePath, schemaType, err := models.ValidateAndParseSchemaType(schemaType)
 	if err != nil {
 		fmt.Printf("failed to validate and parse schemaType %v", err)
 	}
@@ -44,13 +44,21 @@ func runCommand() {
 		fmt.Printf("failed to read inputfile: %v", err)
 	}
 
-	asyncApiModel := models.AsyncApi{}
-	err = yaml.Unmarshal(content, &asyncApiModel)
-	if err != nil {
-		fmt.Printf("failed to unmarshall to asyncApi: %v", err)
+	var modelsMap = make(map[string]interface{}, 0)
+	switch schemaType {
+	case models.AsyncApiType:
+		parsedFileModel := models.AsyncApi{}
+		err = yaml.Unmarshal(content, &parsedFileModel)
+		if err != nil {
+			fmt.Printf("failed to unmarshall to asyncApi: %v", err)
+		}
+		modelsMap = generators.GenerateAsyncModelMaps(parsedFileModel)
+	default:
+		fmt.Printf("invalid schematype")
+		return
 	}
-	modelsMap := generators.GenerateModelMaps(asyncApiModel)
-	template, err := mustache.ParseFile(templateContent)
+
+	template, err := mustache.ParseFile(templatePath)
 	if err != nil {
 		fmt.Printf("failed to parse templates file: %v", err)
 	}
