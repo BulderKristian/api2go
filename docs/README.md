@@ -1,9 +1,16 @@
 # API 2 GO
 
 ## Motivation
-Create a faster, leaner more focused golang api model generator for swagger/openapi/asyncapi for golang
+Create a faster, leaner more focused golang api model generator for `swagger`/`openapi`/`asyncapi` for golang
 
   
-## Usage
+## Docker Example
 
-```api2go generate -i="path/2/spec/spec.example" -o="output/folder" -s="[asyncapi/swagger/openapi]"```
+```shell
+docker run \
+  -v "${PWD}":/local \
+  -u ${UID} codedevstem/api2go:latest generate \
+    -i /local/inputs/spec.yaml \
+    -o /local/output \
+    -s asyncapi
+```
