@@ -6,6 +6,10 @@ import (
 	"os"
 )
 
+const (
+	ReadWritePermissionsMode = 0666
+)
+
 func WriteToFile(buf bytes.Buffer, outDir string, domainName string, modelName string) {
 	// Create output folder if it does not exist already
 	if _, err := os.Stat(outDir); os.IsNotExist(err) {
@@ -18,6 +22,10 @@ func WriteToFile(buf bytes.Buffer, outDir string, domainName string, modelName s
 	file, err := os.Create(fmt.Sprintf("%s/model_%s.go", outDir, modelName))
 	if err != nil {
 		panic(fmt.Errorf("failed to write file: %v", err))
+	}
+	err = os.Chmod(fmt.Sprintf("%s/model_%s.go", outDir, modelName), 0777)
+	if err != nil {
+		panic(fmt.Errorf("failed to edit file permissions: %v", err))
 	}
 	defer func(file *os.File) {
 		err := file.Close()
