@@ -3,7 +3,8 @@ name: Build Docker and Push to DockerHub
 on:
   push:
     branches: [ main ]
-
+    paths-ignore:
+      - docs/**
 jobs:
   build:
     runs-on: ubuntu-latest
