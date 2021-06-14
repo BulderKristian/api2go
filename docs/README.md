@@ -3,14 +3,6 @@
 ## Motivation
 Create a faster, leaner more focused golang api model generator for swagger/openapi/asyncapi for golang
 
-## Capabilities
-
--[ ] AsyncApi
-  -[x] Models 
-  -[ ] Api
--[ ] openapi
-  -[ ] Models 
-  -[ ] Api
   
 ## Usage
 
