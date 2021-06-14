@@ -26,4 +26,30 @@ type {{structName}} struct {
     {{titeledAttributeName}} {{^required}}*{{/required}}{{attributeType}} `json:"{{attributeName}}"` {{#attributeExample}}// Example: {{attributeExample}}{{/attributeExample}}{{#attributeDescription}} - {{attributeDescription}} {{/attributeDescription}}
 {{/properties}}
 }
+
+{{#properties}}
+func (o *{{structName}}) Get{{titeledAttributeName}}() {{attributeType}} {
+    if o == nil {
+        var ret {{attributeType}}
+        return ret
+    }
+    return {{^required}}*{{/required}}o.{{titeledAttributeName}}
+}
+
+{{^required}}
+func (o *{{structName}}) Get{{titeledAttributeName}}Ok() {{attributeType}} {
+    if o == nil || o.{{titeledAttributeName}} == nil {
+        var ret {{attributeType}}
+        return ret
+    }
+    return *o.{{titeledAttributeName}}
+}
+{{/required}}
+
+func (o *{{structName}}) Set{{titeledAttributeName}}(value {{attributeType}}) {
+o.{{titeledAttributeName}} = {{^required}}&{{/required}}value
+}
+
+
+{{/properties}}
 {{/isEnum}}
