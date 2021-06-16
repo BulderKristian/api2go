@@ -9,7 +9,7 @@ const (
 )
 
 var (
-	asyncApi = "./templates/template.asyncapi.mustache"
+	asyncApi = "./templates/template.mustache"
 )
 
 func ValidateAndParseSchemaType(schemaTypeInput string) (string, SchemaType, error) {

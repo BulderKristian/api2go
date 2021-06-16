@@ -14,7 +14,12 @@ func ParseAttributeType(attributeType string, attributeFormat string, items map[
 				return models.DateTime
 			case "uuid":
 				return models.String
+			case "byte":
+				return models.Byte
+			case "binary":
+				return models.Byte
 			}
+
 		}
 	case "array":
 		{

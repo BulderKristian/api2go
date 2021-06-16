@@ -1,50 +1,73 @@
 package mappers
 
 import (
+	"fmt"
 	"github.com/codedevstem/api2go/src/models"
 	"github.com/codedevstem/api2go/src/utils"
 	"sort"
 	"strings"
 )
 
-func MapMessageToModel(message models.Message, messageName string) map[string]interface{} {
+func MapMessageToModel(message models.Message, messageName string) []models.MappedModel {
 	properties := make([]map[string]interface{}, 0)
 	imports := make([]map[string]string, 0)
-	modelMap := make(map[string]interface{}, 0)
+	modelMaps := make([]models.MappedModel, 0)
+	primaryModelMap := make(map[string]interface{}, 0)
 	payload := message.Payload
 	for propertyName, property := range payload.Properties {
-		imports, properties = MapPropertiesToModel(propertyName, property, imports, properties, payload.Required)
+		mappedImports, mappedProperties, nestedModelMaps := MapPropertiesToModel(propertyName, property, imports, properties, payload.Required)
+		imports = mappedImports
+		properties = mappedProperties
+		modelMaps = append(modelMaps, nestedModelMaps...)
 	}
 	if len(imports) > 0 {
-		modelMap["hasImports"] = true
-		modelMap["imports"] = imports
+		primaryModelMap["hasImports"] = true
+		primaryModelMap["imports"] = imports
 	}
 	sort.Sort(models.ModelAttributes(properties))
-	modelMap["properties"] = properties
-	modelMap["structName"] = strings.Title(messageName)
-	modelMap["packageName"] = "spec"
-	return modelMap
+	primaryModelMap["properties"] = properties
+	primaryModelMap["structName"] = strings.Title(messageName)
+	primaryModelMap["packageName"] = "spec"
+	modelMaps = append(modelMaps, models.MappedModel{
+		ModelName: messageName,
+		Model:     primaryModelMap,
+	})
+	return modelMaps
 }
 
-func MapSchemaToModel(schema models.Schema, schemaName string) map[string]interface{} {
-	modelMap := make(map[string]interface{}, 0)
+func MapSchemaToModel(schema models.Schema, schemaName string) []models.MappedModel {
+	modelMaps := make([]models.MappedModel, 0)
 	imports := make([]map[string]string, 0)
 	properties := make([]map[string]interface{}, 0)
+	primaryModelMap := make(map[string]interface{}, 0)
 	for propertyName, property := range schema.Properties {
-		imports, properties = MapPropertiesToModel(propertyName, property, imports, properties, schema.Required)
+		mappedImports, mappedProperties, nestedModelMaps := MapPropertiesToModel(propertyName, property, imports, properties, schema.Required)
+		imports = mappedImports
+		properties = mappedProperties
+		modelMaps = append(modelMaps, nestedModelMaps...)
 	}
 	if len(imports) > 0 {
-		modelMap["hasImports"] = true
-		modelMap["imports"] = imports
+		primaryModelMap["hasImports"] = true
+		primaryModelMap["imports"] = imports
 	}
 	sort.Sort(models.ModelAttributes(properties))
-	modelMap["properties"] = properties
-	modelMap["structName"] = strings.Title(schemaName)
-	modelMap["packageName"] = "spec"
-	return modelMap
+	primaryModelMap["properties"] = properties
+	primaryModelMap["structName"] = strings.Title(schemaName)
+	primaryModelMap["packageName"] = "spec"
+	modelMaps = append(modelMaps, models.MappedModel{
+		ModelName: schemaName,
+		Model:     primaryModelMap,
+	})
+	return modelMaps
 }
 
-func MapPropertiesToModel(propertyName string, property models.Property, imports []map[string]string, properties []map[string]interface{}, requiredProperties []string) ([]map[string]string, []map[string]interface{}) {
+func MapPropertiesToModel(propertyName string,
+	property models.Property,
+	imports []map[string]string,
+	properties []map[string]interface{},
+	requiredProperties []string) (
+	[]map[string]string, []map[string]interface{}, []models.MappedModel) {
+	nestedModelMaps := make([]models.MappedModel, 0)
 	propertyMap := make(map[string]interface{}, 0)
 	isRequired := false
 	for _, requiredProperty := range requiredProperties {
@@ -69,12 +92,48 @@ func MapPropertiesToModel(propertyName string, property models.Property, imports
 			}
 		}
 		propertyMap["attributeType"] = attributeType
+	} else if property.Type != "object" && len(property.OneOf) != 0 {
+		oneOfModelAttributes := make([]string, 0)
+		for i, oneOfSchema := range property.OneOf {
+			if oneOfSchema.Ref == "" {
+				attributeName := fmt.Sprintf("%s_%d", propertyName, i)
+				nestedModelMaps = append(nestedModelMaps, MapSchemaToModel(oneOfSchema, attributeName)...)
+				oneOfModelAttributes = append(oneOfModelAttributes, attributeName)
+			} else {
+				refParts := strings.Split(oneOfSchema.Ref, "/")
+				attributeName := refParts[len(refParts)-1]
+				oneOfModelAttributes = append(oneOfModelAttributes, attributeName)
+			}
+
+		}
+		nestedModelMaps = append(nestedModelMaps, CreateOneOfModelMap(strings.Title(propertyName), oneOfModelAttributes))
+		propertyMap["attributeType"] = strings.Title(propertyName)
 	}
 	propertyMap["attributeDescription"] = strings.Replace(property.Description, "\n", " ", -1)
 	propertyMap["attributeExample"] = property.Example
 
 	properties = append(properties, propertyMap)
-	return imports, properties
+	return imports, properties, nestedModelMaps
+}
+
+func CreateOneOfModelMap(modelName string, propertyNames []string) models.MappedModel {
+	propertiesMaps := make([]map[string]interface{}, 0)
+	for _, name := range propertyNames {
+		propertiesMap := make(map[string]interface{}, 0)
+		propertiesMap["titeledAttributeName"] = strings.Title(name)
+		propertiesMap["attributeName"] = fmt.Sprintf("%s%s", strings.ToLower(name[:1]), name[1:])
+		propertiesMap["attributeType"] = strings.Title(name)
+		propertiesMap["required"] = false
+		propertiesMaps = append(propertiesMaps, propertiesMap)
+	}
+	model := make(map[string]interface{}, 0)
+	model["properties"] = propertiesMaps
+	model["structName"] = strings.Title(modelName)
+	model["packageName"] = "spec"
+	return models.MappedModel{
+		ModelName: strings.Title(modelName),
+		Model:     model,
+	}
 }
 
 func MapSchemaToEnum(schema models.Schema, schemaName string) map[string]interface{} {

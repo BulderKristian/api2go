@@ -45,11 +45,9 @@ func (o *{{structName}}) Get{{titeledAttributeName}}Ok() {{attributeType}} {
     return *o.{{titeledAttributeName}}
 }
 {{/required}}
-
 func (o *{{structName}}) Set{{titeledAttributeName}}(value {{attributeType}}) {
-o.{{titeledAttributeName}} = {{^required}}&{{/required}}value
+    o.{{titeledAttributeName}} = {{^required}}&{{/required}}value
 }
-
 
 {{/properties}}
 {{/isEnum}}

@@ -31,6 +31,7 @@ type Property struct {
 	Enum        []string          `yaml:"enum,omitempty"`
 	Items       map[string]string `yaml:"items,omitempty"`
 	Ref         string            `yaml:"$ref,omitempty"`
+	OneOf       []Schema          `yaml:"oneOf,omitempty"`
 }
 
 type Schema struct {
@@ -40,4 +41,6 @@ type Schema struct {
 	Pattern    string              `yaml:"pattern,omitempty"`
 	Properties map[string]Property `yaml:"properties"`
 	Required   []string            `yaml:"required,omitempty"`
+	OneOf      map[string]Schema   `yaml:"oneOf,omitempty"`
+	Ref        string              `yaml:"$ref,omitempty"`
 }
