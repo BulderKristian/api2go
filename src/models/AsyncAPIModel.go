@@ -22,16 +22,17 @@ type Payload struct {
 }
 
 type Property struct {
-	Type        string            `yaml:"type,omitempty"`
-	Format      string            `yaml:"format,omitempty"`
-	Example     interface{}       `yaml:"example,omitempty"`
-	Pattern     string            `yaml:"pattern,omitempty"`
-	Description string            `yaml:"description,omitempty"`
-	Nullable    bool              `yaml:"nullable,omitempty"`
-	Enum        []string          `yaml:"enum,omitempty"`
-	Items       map[string]string `yaml:"items,omitempty"`
-	Ref         string            `yaml:"$ref,omitempty"`
-	OneOf       []Schema          `yaml:"oneOf,omitempty"`
+	Type        string              `yaml:"type,omitempty"`
+	Format      string              `yaml:"format,omitempty"`
+	Example     interface{}         `yaml:"example,omitempty"`
+	Pattern     string              `yaml:"pattern,omitempty"`
+	Description string              `yaml:"description,omitempty"`
+	Nullable    bool                `yaml:"nullable,omitempty"`
+	Enum        []string            `yaml:"enum,omitempty"`
+	Items       map[string]string   `yaml:"items,omitempty"`
+	Ref         string              `yaml:"$ref,omitempty"`
+	OneOf       []Schema            `yaml:"oneOf,omitempty"`
+	Properties  map[string]Property `yaml:"properties,omitempty"`
 }
 
 type Schema struct {

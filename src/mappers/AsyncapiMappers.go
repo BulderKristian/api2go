@@ -93,20 +93,12 @@ func MapPropertiesToModel(propertyName string,
 		}
 		propertyMap["attributeType"] = attributeType
 	} else if property.Type != "object" && len(property.OneOf) != 0 {
-		oneOfModelAttributes := make([]string, 0)
-		for i, oneOfSchema := range property.OneOf {
-			if oneOfSchema.Ref == "" {
-				attributeName := fmt.Sprintf("%s_%d", propertyName, i)
-				nestedModelMaps = append(nestedModelMaps, MapSchemaToModel(oneOfSchema, attributeName)...)
-				oneOfModelAttributes = append(oneOfModelAttributes, attributeName)
-			} else {
-				refParts := strings.Split(oneOfSchema.Ref, "/")
-				attributeName := refParts[len(refParts)-1]
-				oneOfModelAttributes = append(oneOfModelAttributes, attributeName)
-			}
-
-		}
-		nestedModelMaps = append(nestedModelMaps, CreateOneOfModelMap(strings.Title(propertyName), oneOfModelAttributes))
+		oneOfModelProperties := make([]string, 0)
+		oneOfModelProperties, nestedModelMaps = MapOneOfProperty(propertyName, property, nestedModelMaps)
+		nestedModelMaps = append(nestedModelMaps, CreateOneOfModelMap(strings.Title(propertyName), oneOfModelProperties))
+		propertyMap["attributeType"] = strings.Title(propertyName)
+	} else if property.Type == "object" {
+		nestedModelMaps = append(nestedModelMaps, MapSchemaToModel(MapObjectPropertyToSchema(property), propertyName)...)
 		propertyMap["attributeType"] = strings.Title(propertyName)
 	}
 	propertyMap["attributeDescription"] = strings.Replace(property.Description, "\n", " ", -1)
@@ -114,6 +106,31 @@ func MapPropertiesToModel(propertyName string,
 
 	properties = append(properties, propertyMap)
 	return imports, properties, nestedModelMaps
+}
+
+func MapObjectPropertyToSchema(property models.Property) models.Schema {
+	return models.Schema{
+		Type:       "object",
+		Example:    fmt.Sprintf("%s", property.Example),
+		Pattern:    fmt.Sprintf("%s", property.Pattern),
+		Properties: property.Properties,
+	}
+}
+
+func MapOneOfProperty(propertyName string, property models.Property, nestedModelMaps []models.MappedModel) ([]string, []models.MappedModel) {
+	oneOfModelProperties := make([]string, 0)
+	for i, oneOfSchema := range property.OneOf {
+		if oneOfSchema.Ref == "" {
+			attributeName := fmt.Sprintf("%s_%d", propertyName, i)
+			nestedModelMaps = append(nestedModelMaps, MapSchemaToModel(oneOfSchema, attributeName)...)
+			oneOfModelProperties = append(oneOfModelProperties, attributeName)
+		} else {
+			refParts := strings.Split(oneOfSchema.Ref, "/")
+			attributeName := refParts[len(refParts)-1]
+			oneOfModelProperties = append(oneOfModelProperties, attributeName)
+		}
+	}
+	return oneOfModelProperties, nestedModelMaps
 }
 
 func CreateOneOfModelMap(modelName string, propertyNames []string) models.MappedModel {
