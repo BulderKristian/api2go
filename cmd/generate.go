@@ -68,6 +68,6 @@ func runCommand() {
 		if err != nil {
 			fmt.Printf("failed to render template: %v", err)
 		}
-		utils.WriteToFile(contentBuffer, outputFolder, strings.ToLower(modelName), fmt.Sprintf("%s%s", strings.ToLower(modelName[:1]), modelName[1:]))
+		utils.WriteToFile(contentBuffer, outputFolder, fmt.Sprintf("%s%s", strings.ToLower(modelName[:1]), modelName[1:]))
 	}
 }

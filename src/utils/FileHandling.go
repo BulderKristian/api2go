@@ -6,14 +6,10 @@ import (
 	"os"
 )
 
-const (
-	ReadWritePermissionsMode = 0666
-)
-
-func WriteToFile(buf bytes.Buffer, outDir string, domainName string, modelName string) {
+func WriteToFile(buf bytes.Buffer, outDir string, modelName string) {
 	// Create output folder if it does not exist already
 	if _, err := os.Stat(outDir); os.IsNotExist(err) {
-		err := os.Mkdir(outDir, 0755)
+		err := os.MkdirAll(outDir, 0755)
 		if err != nil {
 			panic(fmt.Errorf("failed to create output directory, %v", err))
 		}
