@@ -1,30 +1,28 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type SchemaType string
 
 const (
 	AsyncApiType SchemaType = "asyncapi"
+	OpenApi3Type SchemaType = "openapi3"
 )
 
 var (
-	asyncApi = "./templates/template.mustache"
+	golangTemplatePath = "./templates/template.mustache"
 )
 
 func ValidateAndParseSchemaType(schemaTypeInput string) (string, SchemaType, error) {
 	schemaType := SchemaType(schemaTypeInput)
 	switch schemaType {
 	case AsyncApiType:
-		return asyncApi, schemaType, nil
+		return golangTemplatePath, schemaType, nil
+	case OpenApi3Type:
+		return golangTemplatePath, schemaType, nil
 	}
-	return "", "", fmt.Errorf("invalid schematype: valid schema types are [asyncapi]")
-}
 
-func SelectModelTypeFromSchemaType(schemaType SchemaType) (interface{}, error) {
-	switch schemaType {
-	case AsyncApiType:
-		return &AsyncApi{}, nil
-	}
-	return nil, fmt.Errorf("invalid schematype: valid schema types are [asyncapi]")
+	return "", "", fmt.Errorf("invalid schematype: valid schema types are [asyncapi]")
 }

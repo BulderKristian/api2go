@@ -1,16 +1,16 @@
-package models
+package common
 
-type ModelAttributes []map[string]interface{}
+type ModelProperties []map[string]interface{}
 
-func (ma ModelAttributes) Len() int {
+func (ma ModelProperties) Len() int {
 	return len(ma)
 }
 
-func (ma ModelAttributes) Less(i, j int) bool {
-	return ma[i]["titeledAttributeName"].(string) <= ma[j]["titeledAttributeName"].(string)
+func (ma ModelProperties) Less(i, j int) bool {
+	return ma[i]["titledAttributeName"].(string) <= ma[j]["titledAttributeName"].(string)
 }
 
-func (ma ModelAttributes) Swap(i, j int) {
+func (ma ModelProperties) Swap(i, j int) {
 	ma[i], ma[j] = ma[j], ma[i]
 }
 

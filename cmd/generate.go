@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/cbroglie/mustache"
+	"github.com/codedevstem/api2go/src/common"
 	"github.com/codedevstem/api2go/src/generators"
 	"github.com/codedevstem/api2go/src/models"
+	"github.com/codedevstem/api2go/src/openapi3"
 	"github.com/codedevstem/api2go/src/utils"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -34,6 +36,7 @@ var (
 )
 
 func runCommand() {
+	common.SetInputPath(inputFile)
 	templatePath, schemaType, err := models.ValidateAndParseSchemaType(schemaType)
 	if err != nil {
 		fmt.Printf("failed to validate and parse schemaType %v", err)
@@ -53,6 +56,13 @@ func runCommand() {
 			fmt.Printf("failed to unmarshall to asyncApi: %v", err)
 		}
 		modelsMap = generators.GenerateAsyncModelMaps(parsedFileModel)
+	case models.OpenApi3Type:
+		parsedFileModel := openapi3.Openapi3{}
+		err = yaml.Unmarshal(content, &parsedFileModel)
+		if err != nil {
+			panic(fmt.Errorf("failed to unmarshall to openapi3: %v", err))
+		}
+		modelsMap = openapi3.GenerateOpenapi3ModelMaps(parsedFileModel)
 	default:
 		fmt.Printf("invalid schematype")
 		return
@@ -68,6 +78,7 @@ func runCommand() {
 		if err != nil {
 			fmt.Printf("failed to render template: %v", err)
 		}
-		utils.WriteToFile(contentBuffer, outputFolder, fmt.Sprintf("%s%s", strings.ToLower(modelName[:1]), modelName[1:]))
+		utils.WriteToFile(contentBuffer, fmt.Sprintf("%s/%s", outputFolder, common.GetInputFileName()), fmt.Sprintf("%s%s", strings.ToLower(modelName[:1]), modelName[1:]))
+
 	}
 }

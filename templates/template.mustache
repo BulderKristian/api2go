@@ -7,8 +7,8 @@ import (
     "{{importValue}}"
 {{/imports}}
 )
-
 {{/hasImports}}
+
 {{! Enum Section }}
 {{#isEnum}}
 type {{structName}} {{enumType}}
@@ -23,30 +23,30 @@ const (
 {{^isEnum}}
 type {{structName}} struct {
 {{#properties}}
-    {{titeledAttributeName}} {{^required}}*{{/required}}{{attributeType}} `json:"{{attributeName}}"` {{#attributeExample}}// Example: {{attributeExample}}{{/attributeExample}}{{#attributeDescription}} - {{attributeDescription}} {{/attributeDescription}}
+    {{titledAttributeName}} {{^required}}*{{/required}}{{attributeType}} `json:"{{attributeName}}{{^required}},omitempty{{/required}}"`
 {{/properties}}
 }
 
 {{#properties}}
-func (o *{{structName}}) Get{{titeledAttributeName}}() {{attributeType}} {
+func (o *{{structName}}) Get{{titledAttributeName}}() {{attributeType}} {
     if o == nil {
         var ret {{attributeType}}
         return ret
     }
-    return {{^required}}*{{/required}}o.{{titeledAttributeName}}
+    return {{^required}}*{{/required}}o.{{titledAttributeName}}
 }
 
 {{^required}}
-func (o *{{structName}}) Get{{titeledAttributeName}}Ok() {{attributeType}} {
-    if o == nil || o.{{titeledAttributeName}} == nil {
+func (o *{{structName}}) Get{{titledAttributeName}}Ok() {{attributeType}} {
+    if o == nil || o.{{titledAttributeName}} == nil {
         var ret {{attributeType}}
         return ret
     }
-    return *o.{{titeledAttributeName}}
+    return *o.{{titledAttributeName}}
 }
 {{/required}}
-func (o *{{structName}}) Set{{titeledAttributeName}}(value {{attributeType}}) {
-    o.{{titeledAttributeName}} = {{^required}}&{{/required}}value
+func (o *{{structName}}) Set{{titledAttributeName}}(value {{attributeType}}) {
+    o.{{titledAttributeName}} = {{^required}}&{{/required}}value
 }
 
 {{/properties}}

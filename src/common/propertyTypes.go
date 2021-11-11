@@ -1,4 +1,4 @@
-package models
+package common
 
 const (
 	String   = "string"
@@ -6,8 +6,9 @@ const (
 	Int      = "int"
 	Int32    = "int32"
 	Int64    = "int64"
+	Float32  = "float32"
+	Float64  = "float64"
 	DateTime = "time.Time"
-	Uuid     = "uuid"
 	Byte     = "[]byte"
 	Array    = "[]"
 )

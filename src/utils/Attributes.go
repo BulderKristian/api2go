@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/codedevstem/api2go/src/models"
+	"github.com/codedevstem/api2go/src/common"
 	"strings"
 )
 
@@ -11,32 +11,56 @@ func ParseAttributeType(attributeType string, attributeFormat string, items map[
 		{
 			switch attributeFormat {
 			case "date-time":
-				return models.DateTime
+				return common.DateTime
+			case "date":
+				return common.DateTime
 			case "uuid":
-				return models.String
+				return common.String
 			case "byte":
-				return models.Byte
+				return common.Byte
 			case "binary":
-				return models.Byte
+				return common.Byte
+			default:
+				return common.String
 			}
 
 		}
+	case "integer":
+		{
+			switch attributeFormat {
+			case "int32":
+				return common.Int32
+			case "int64":
+				return common.Int64
+			default:
+				return common.Int
+			}
+		}
+	case "number":
+		{
+			switch attributeFormat {
+			case "float":
+				return common.Float32
+			case "double":
+				return common.Float64
+			}
+		}
 	case "array":
 		{
-			return models.Array + getRefAttributeType(items)
+			return common.Array + getRefAttributeType(items)
 		}
 	case "boolean":
-		return models.Bool
+		return common.Bool
 	}
 
-	return models.String
+	return attributeType
 
 }
 
 func getRefAttributeType(items map[string]string) string {
 	if items["$ref"] != "" {
 		refParts := strings.Split(items["$ref"], "/")
-		return refParts[len(refParts)-1]
+		return strings.Title(refParts[len(refParts)-1])
 
 	} else if items["type"] != "" {
 		return ParseAttributeType(items["type"], items["format"], nil)

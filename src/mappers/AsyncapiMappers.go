@@ -2,6 +2,7 @@ package mappers
 
 import (
 	"fmt"
+	"github.com/codedevstem/api2go/src/common"
 	"github.com/codedevstem/api2go/src/models"
 	"github.com/codedevstem/api2go/src/utils"
 	"sort"
@@ -24,7 +25,7 @@ func MapMessageToModel(message models.Message, messageName string) []models.Mapp
 		primaryModelMap["hasImports"] = true
 		primaryModelMap["imports"] = imports
 	}
-	sort.Sort(models.ModelAttributes(properties))
+	sort.Sort(common.ModelProperties(properties))
 	primaryModelMap["properties"] = properties
 	primaryModelMap["structName"] = strings.Title(messageName)
 	primaryModelMap["packageName"] = "spec"
@@ -50,7 +51,7 @@ func MapSchemaToModel(schema models.Schema, schemaName string) []models.MappedMo
 		primaryModelMap["hasImports"] = true
 		primaryModelMap["imports"] = imports
 	}
-	sort.Sort(models.ModelAttributes(properties))
+	sort.Sort(common.ModelProperties(properties))
 	primaryModelMap["properties"] = properties
 	primaryModelMap["structName"] = strings.Title(schemaName)
 	primaryModelMap["packageName"] = "spec"
@@ -77,7 +78,7 @@ func MapPropertiesToModel(propertyName string,
 		}
 	}
 	propertyMap["required"] = isRequired
-	propertyMap["titeledAttributeName"] = strings.Title(propertyName)
+	propertyMap["titledAttributeName"] = strings.Title(propertyName)
 	propertyMap["attributeName"] = propertyName
 	if property.Type == "" && property.Ref != "" {
 		refParts := strings.Split(property.Ref, "/")
@@ -86,7 +87,7 @@ func MapPropertiesToModel(propertyName string,
 	if property.Type != "object" && property.Type != "" {
 		attributeType := utils.ParseAttributeType(property.Type, property.Format, property.Items)
 		switch attributeType {
-		case models.DateTime:
+		case common.DateTime:
 			{
 				imports = utils.AddImportIfNotExisting(imports, "time")
 			}
@@ -137,7 +138,7 @@ func CreateOneOfModelMap(modelName string, propertyNames []string) models.Mapped
 	propertiesMaps := make([]map[string]interface{}, 0)
 	for _, name := range propertyNames {
 		propertiesMap := make(map[string]interface{}, 0)
-		propertiesMap["titeledAttributeName"] = strings.Title(name)
+		propertiesMap["titledAttributeName"] = strings.Title(name)
 		propertiesMap["attributeName"] = fmt.Sprintf("%s%s", strings.ToLower(name[:1]), name[1:])
 		propertiesMap["attributeType"] = strings.Title(name)
 		propertiesMap["required"] = false
@@ -164,7 +165,7 @@ func MapSchemaToEnum(schema models.Schema, schemaName string) map[string]interfa
 	}
 	modelMap["enumType"] = schema.Type
 	modelMap["isEnum"] = true
-	sort.Sort(models.ModelEnums(enums))
+	sort.Sort(common.ModelEnums(enums))
 	modelMap["enums"] = enums
 	modelMap["structName"] = strings.Title(schemaName)
 	modelMap["packageName"] = "spec"
