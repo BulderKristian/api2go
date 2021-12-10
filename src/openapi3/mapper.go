@@ -74,13 +74,13 @@ func MapPropertiesIntoModel(
 			MapSchemaIntoModelsMap(rootModelsMap, MapAllOfToNewAllOfSchema(rootModelsMap, property.AllOf), allOfSchemaName)
 			attributeType = strings.Title(allOfSchemaName)
 		} else if property.OneOf != nil {
-			allOfSchemaName := fmt.Sprintf("oneOf%s", strings.Title(propertyName))
-			MapSchemaIntoModelsMap(rootModelsMap, MapOneOfToNewOneOfSchema(rootModelsMap, property.OneOf), allOfSchemaName)
-			attributeType = strings.Title(allOfSchemaName)
+			oneOfSchemaName := fmt.Sprintf("oneOf%s", strings.Title(propertyName))
+			MapSchemaIntoModelsMap(rootModelsMap, MapOneOfToNewOneOfSchema(rootModelsMap, property.OneOf), oneOfSchemaName)
+			attributeType = strings.Title(oneOfSchemaName)
 		} else if property.AnyOf != nil {
-			allOfSchemaName := fmt.Sprintf("anyOf%s", strings.Title(propertyName))
-			MapSchemaIntoModelsMap(rootModelsMap, MapAnyOfToNewAnyOfSchema(rootModelsMap, property.AnyOf), allOfSchemaName)
-			attributeType = strings.Title(allOfSchemaName)
+			anyOfPropertyName := fmt.Sprintf("anyOf%s", strings.Title(propertyName))
+			MapSchemaIntoModelsMap(rootModelsMap, MapAnyOfToNewAnyOfSchema(rootModelsMap, property.AnyOf), anyOfPropertyName)
+			attributeType = strings.Title(anyOfPropertyName)
 		} else {
 			attributeType = utils.ParseAttributeType(property.Type, property.Format, property.Items)
 		}
