@@ -1,0 +1,32 @@
+openapi: 3.0.3
+info:
+  title: Title
+  description: Title
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+
+components:
+  schemas:
+    customComponent:
+      type: object
+      properties:
+        customString:
+          type: string
+        customInteger:
+          type: integer
+        customBoolean:
+          type: boolean
+        customEnum:
+          $ref: '#/components/schemas/customEnum'
+    customEnum:
+      type: string
+      enum:
+        - One
+        - Two
+        - Three
+        - Four
+
+
+  
