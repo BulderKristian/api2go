@@ -29,8 +29,10 @@ func DeepCompareDirectories(dir1, dir2 string) (bool, error) {
 			return false, err
 		}
 		if !fileEq {
+			fmt.Printf("Failed: %s\n", filesDir1[i].Name())
 			return false, nil
 		}
+		fmt.Printf("Matched: %s\n", filesDir1[i].Name())
 	}
 	return true, nil
 }
