@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-var rootCmd = &cobra.Command{
+var RootCmd = &cobra.Command{
 	Use:   "api2go",
 	Short: "Generate golang models from .yaml specs",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -16,7 +16,8 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
+	_:
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

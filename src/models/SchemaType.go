@@ -2,18 +2,26 @@ package models
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 )
 
 type SchemaType string
 
 const (
-	AsyncApiType SchemaType = "asyncapi"
-	OpenApi3Type SchemaType = "openapi3"
+	AsyncApiType  SchemaType = "asyncapi"
+	OpenApi3Type  SchemaType = "openapi3"
+	templateRPath            = "templates/template.mustache"
 )
 
 var (
-	golangTemplatePath = "./templates/template.mustache"
+	golangTemplatePath string
 )
+
+func init() {
+	f, _ := os.Getwd()
+	golangTemplatePath = fmt.Sprintf("%s/%s", filepath.Dir(f), templateRPath)
+}
 
 func ValidateAndParseSchemaType(schemaTypeInput string) (string, SchemaType, error) {
 	schemaType := SchemaType(schemaTypeInput)

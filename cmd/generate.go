@@ -16,26 +16,29 @@ import (
 )
 
 func init() {
-	generateCmd.PersistentFlags().StringVarP(&inputFile, "input", "i", "", ".yaml spec to parse")
-	generateCmd.PersistentFlags().StringVarP(&outputFolder, "output", "o", "", "output folder")
-	generateCmd.PersistentFlags().StringVarP(&schemaType, "schema", "s", "", "schema to read from [asyncapi]")
-	rootCmd.AddCommand(generateCmd)
+	GenerateCmdFlags(RootCmd)
+	RootCmd.AddCommand(GenerateCmd)
 }
 
 var (
 	inputFile    string
 	outputFolder string
 	schemaType   string
-	generateCmd  = &cobra.Command{
+	GenerateCmd  = &cobra.Command{
 		Use:   "generate",
 		Short: "Generate golang models from .yaml specs",
-		Run: func(cmd *cobra.Command, args []string) {
-			runCommand()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return Generate()
 		},
 	}
 )
 
-func runCommand() {
+func GenerateCmdFlags(cmd *cobra.Command) {
+	cmd.PersistentFlags().StringVarP(&inputFile, "input", "i", "", ".yaml spec to parse")
+	cmd.PersistentFlags().StringVarP(&outputFolder, "output", "o", "", "output folder")
+	cmd.PersistentFlags().StringVarP(&schemaType, "schema", "s", "", "schema to read from [asyncapi]")
+}
+func Generate() error {
 	common.SetInputPath(inputFile)
 	templatePath, schemaType, err := models.ValidateAndParseSchemaType(schemaType)
 	if err != nil {
@@ -53,32 +56,32 @@ func runCommand() {
 		parsedFileModel := models.AsyncApi{}
 		err = yaml.Unmarshal(content, &parsedFileModel)
 		if err != nil {
-			fmt.Printf("failed to unmarshall to asyncApi: %v", err)
+			return fmt.Errorf("failed to unmarshall to asyncApi: %v", err)
 		}
 		modelsMap = generators.GenerateAsyncModelMaps(parsedFileModel)
 	case models.OpenApi3Type:
 		parsedFileModel := openapi3.Openapi3{}
 		err = yaml.Unmarshal(content, &parsedFileModel)
 		if err != nil {
-			panic(fmt.Errorf("failed to unmarshall to openapi3: %v", err))
+			return fmt.Errorf("failed to unmarshall to openapi3: %v", err)
 		}
 		modelsMap = openapi3.GenerateOpenapi3ModelMaps(parsedFileModel)
 	default:
-		fmt.Printf("invalid schematype")
-		return
+		return fmt.Errorf("invalid schematype")
 	}
 
 	template, err := mustache.ParseFile(templatePath)
 	if err != nil {
-		fmt.Printf("failed to parse templates file: %v", err)
+		return fmt.Errorf("failed to parse templates file: %v", err)
 	}
 	for modelName, modelMap := range modelsMap {
 		var contentBuffer bytes.Buffer
 		err = template.FRender(&contentBuffer, modelMap)
 		if err != nil {
-			fmt.Printf("failed to render template: %v", err)
+			return fmt.Errorf("failed to render template: %v", err)
 		}
 		utils.WriteToFile(contentBuffer, fmt.Sprintf("%s/%s", outputFolder, common.GetInputFileName()), fmt.Sprintf("%s%s", strings.ToLower(modelName[:1]), modelName[1:]))
-
 	}
+_:
+	return nil
 }

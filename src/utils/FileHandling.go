@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"fmt"
+	"go/format"
 	"os"
 )
 
@@ -30,8 +31,13 @@ func WriteToFile(buf bytes.Buffer, outDir string, modelName string) {
 		}
 	}(file)
 
+	// Format contents
+	formattedBytes, err := format.Source(buf.Bytes())
+	if err != nil {
+		panic("iik!")
+	}
 	// Write contents to file
-	_, err = file.Write(buf.Bytes())
+	_, err = file.Write(formattedBytes)
 	if err != nil {
 		panic("iik!")
 	}
