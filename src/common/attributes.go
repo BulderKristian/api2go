@@ -1,7 +1,6 @@
-package utils
+package common
 
 import (
-	"github.com/codedevstem/api2go/src/common"
 	"strings"
 )
 
@@ -11,17 +10,17 @@ func ParseAttributeType(attributeType string, attributeFormat string, items map[
 		{
 			switch attributeFormat {
 			case "date-time":
-				return common.DateTime
+				return DateTime
 			case "date":
-				return common.DateTime
+				return DateTime
 			case "uuid":
-				return common.String
+				return String
 			case "byte":
-				return common.Byte
+				return Byte
 			case "binary":
-				return common.Byte
+				return Byte
 			default:
-				return common.String
+				return String
 			}
 
 		}
@@ -29,28 +28,28 @@ func ParseAttributeType(attributeType string, attributeFormat string, items map[
 		{
 			switch attributeFormat {
 			case "int32":
-				return common.Int32
+				return Int32
 			case "int64":
-				return common.Int64
+				return Int64
 			default:
-				return common.Int
+				return Int
 			}
 		}
 	case "number":
 		{
 			switch attributeFormat {
 			case "float":
-				return common.Float32
+				return Float32
 			case "double":
-				return common.Float64
+				return Float64
 			}
 		}
 	case "array":
 		{
-			return common.Array + getRefAttributeType(items)
+			return Array + getRefAttributeType(items)
 		}
 	case "boolean":
-		return common.Bool
+		return Bool
 	}
 
 	return attributeType
@@ -60,7 +59,7 @@ func ParseAttributeType(attributeType string, attributeFormat string, items map[
 func getRefAttributeType(items map[string]string) string {
 	if items["$ref"] != "" {
 		refParts := strings.Split(items["$ref"], "/")
-		return strings.Title(refParts[len(refParts)-1])
+		return Title(refParts[len(refParts)-1])
 
 	} else if items["type"] != "" {
 		return ParseAttributeType(items["type"], items["format"], nil)

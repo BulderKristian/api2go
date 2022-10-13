@@ -44,14 +44,18 @@ func DeepCompareFiles(file1, file2 string) (bool, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer f1.Close()
+	defer func(f1 *os.File) {
+		_ = f1.Close()
+	}(f1)
 
 	// Open file2
 	f2, err := os.Open(file2)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer f2.Close()
+	defer func(f2 *os.File) {
+		_ = f2.Close()
+	}(f2)
 
 	for {
 		b1 := make([]byte, chunkSize)
@@ -71,7 +75,6 @@ func DeepCompareFiles(file1, file2 string) (bool, error) {
 		}
 
 		if !bytes.Equal(b1, b2) {
-			//TODO: Figure out way to print out diff if not equal
 			return false, nil
 		}
 	}

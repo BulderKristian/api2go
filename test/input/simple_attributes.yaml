@@ -1,0 +1,46 @@
+openapi: 3.0.3
+info:
+  title: Simple
+  description: Simple
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:1212/simple'
+paths:
+  /:
+    get:
+      responses:
+        200:
+          description: Everything is OK in a simple world
+components:
+  schemas:
+    simple:
+      type: object
+      properties:
+        Int32:
+          type: integer
+          format: int32
+        Int64:
+          type: integer
+          format: int64
+        Float:
+          type: number
+          format: float
+        Double:
+          type: number
+          format: double
+        String:
+          type: string
+        Byte:
+          type: string
+          format: byte
+        Boolean:
+          type: boolean
+        Date:
+          type: string
+          format: date
+        DateTime:
+          type: string
+          format: date-time
+        Password:
+          type: string
+          format: password

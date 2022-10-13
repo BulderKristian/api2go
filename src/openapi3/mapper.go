@@ -3,7 +3,6 @@ package openapi3
 import (
 	"fmt"
 	"github.com/codedevstem/api2go/src/common"
-	"github.com/codedevstem/api2go/src/utils"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"sort"
@@ -28,7 +27,7 @@ func MapSchemaToEnum(modelsMap map[string]interface{}, schema Schema, enumName s
 	enums := make([]map[string]string, 0)
 	for _, enum := range schema.Enums {
 		enumConst := make(map[string]string, 0)
-		enumConst["enumConstName"] = enumName + strings.Title(enum)
+		enumConst["enumConstName"] = enumName + common.Title(enum)
 		enumConst["enumStringValue"] = enum
 		enums = append(enums, enumConst)
 	}
@@ -36,7 +35,7 @@ func MapSchemaToEnum(modelsMap map[string]interface{}, schema Schema, enumName s
 	modelMap["isEnum"] = true
 	sort.Sort(common.ModelEnums(enums))
 	modelMap["enums"] = enums
-	modelMap["structName"] = strings.Title(enumName)
+	modelMap["structName"] = common.Title(enumName)
 	modelMap["packageName"] = "spec"
 	modelsMap[enumName] = modelMap
 }
@@ -44,11 +43,16 @@ func MapSchemaToEnum(modelsMap map[string]interface{}, schema Schema, enumName s
 func MapSchemaIntoModelsMap(modelsMap map[string]interface{}, schema Schema, schemaName string) {
 	modelMap := make(map[string]interface{}, 0)
 	MapPropertiesIntoModel(modelsMap, modelMap, schema.Properties, schema.Required)
-	modelMap["structName"] = strings.Title(schemaName)
+	modelMap["structName"] = common.Title(schemaName)
 	modelMap["packageName"] = "spec"
 	modelsMap[schemaName] = modelMap
 }
 
+// MapPropertiesIntoModel
+/**
+ * Once a property list including one or more property is found,we can transform it,
+ * based on the information parsed from the spec, to a golang
+ */
 func MapPropertiesIntoModel(
 	rootModelsMap map[string]interface{},
 	parent map[string]interface{},
@@ -59,30 +63,30 @@ func MapPropertiesIntoModel(
 	imports := make([]map[string]string, 0)
 	for propertyName, property := range properties {
 		mappedProperty := make(map[string]interface{})
-		mappedProperty["titledAttributeName"] = strings.Title(propertyName)
+		mappedProperty["titledAttributeName"] = common.Title(propertyName)
 		mappedProperty["attributeName"] = propertyName
 		attributeType := ""
 		if property.Type == "" && property.Ref != "" {
 			refParts := strings.Split(property.Ref, "/")
-			attributeType = strings.Title(refParts[len(refParts)-1])
+			attributeType = common.Title(refParts[len(refParts)-1])
 			if strings.Contains(property.Ref, ".yaml") {
 				parsedFileModel := LoadExternalFileAndConvertToOpenapi3Model(property.Ref)
 				MapSchemasIntoModelsMap(rootModelsMap, parsedFileModel.Components.Schemas, &refParts[len(refParts)-1])
 			}
 		} else if property.AllOf != nil {
-			allOfSchemaName := fmt.Sprintf("allOf%s", strings.Title(propertyName))
+			allOfSchemaName := fmt.Sprintf("allOf%s", common.Title(propertyName))
 			MapSchemaIntoModelsMap(rootModelsMap, MapAllOfToNewAllOfSchema(rootModelsMap, property.AllOf), allOfSchemaName)
-			attributeType = strings.Title(allOfSchemaName)
+			attributeType = common.Title(allOfSchemaName)
 		} else if property.OneOf != nil {
-			oneOfSchemaName := fmt.Sprintf("oneOf%s", strings.Title(propertyName))
+			oneOfSchemaName := fmt.Sprintf("oneOf%s", common.Title(propertyName))
 			MapSchemaIntoModelsMap(rootModelsMap, MapOneOfToNewOneOfSchema(rootModelsMap, property.OneOf), oneOfSchemaName)
-			attributeType = strings.Title(oneOfSchemaName)
+			attributeType = common.Title(oneOfSchemaName)
 		} else if property.AnyOf != nil {
-			anyOfPropertyName := fmt.Sprintf("anyOf%s", strings.Title(propertyName))
+			anyOfPropertyName := fmt.Sprintf("anyOf%s", common.Title(propertyName))
 			MapSchemaIntoModelsMap(rootModelsMap, MapAnyOfToNewAnyOfSchema(rootModelsMap, property.AnyOf), anyOfPropertyName)
-			attributeType = strings.Title(anyOfPropertyName)
+			attributeType = common.Title(anyOfPropertyName)
 		} else {
-			attributeType = utils.ParseAttributeType(property.Type, property.Format, property.Items)
+			attributeType = common.ParseAttributeType(property.Type, property.Format, property.Items)
 		}
 		mappedProperty["attributeType"] = attributeType
 		for _, requiredProperty := range requiredProperties {
@@ -165,16 +169,16 @@ func FindPropertyName(rootModelsMap map[string]interface{}, schema *Schema, i in
 	propertyName := ""
 	if schema.Ref != "" {
 		refParts := strings.Split(schema.Ref, "/")
-		propertyName = strings.Title(refParts[len(refParts)-1])
+		propertyName = common.Title(refParts[len(refParts)-1])
 		if strings.Contains(schema.Ref, ".yaml") {
 			parsedFileModel := LoadExternalFileAndConvertToOpenapi3Model(schema.Ref)
 			MapSchemasIntoModelsMap(rootModelsMap, parsedFileModel.Components.Schemas, &refParts[len(refParts)-1])
 		}
 	} else if schema.Title != "" {
-		propertyName = strings.Title(schema.Title)
+		propertyName = common.Title(schema.Title)
 		MapSchemaIntoModelsMap(rootModelsMap, *schema, propertyName)
 	} else {
-		propertyName = strings.Title(fmt.Sprintf("inlineObject%d", i))
+		propertyName = common.Title(fmt.Sprintf("inlineObject%d", i))
 		MapSchemaIntoModelsMap(rootModelsMap, *schema, propertyName)
 		schema.Type = propertyName
 	}

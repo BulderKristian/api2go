@@ -21,6 +21,10 @@ func Test_GenerateCommand(t *testing.T) {
 			args:        []string{"--input", "../test/input/generic.yaml", "--output", "../test/actualOutput", "--schema", "openapi3"},
 			err:         nil,
 			packageName: "generic",
+		}, {
+			args:        []string{"--input", "../test/input/simple_attributes.yaml", "--output", "../test/actualOutput", "--schema", "openapi3"},
+			err:         nil,
+			packageName: "generic",
 		},
 	}
 

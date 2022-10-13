@@ -34,7 +34,7 @@ func WriteToFile(buf bytes.Buffer, outDir string, modelName string) {
 	// Format contents
 	formattedBytes, err := format.Source(buf.Bytes())
 	if err != nil {
-		panic("iik!")
+		panic("iik! " + err.Error())
 	}
 	// Write contents to file
 	_, err = file.Write(formattedBytes)

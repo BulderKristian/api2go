@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/codedevstem/api2go/src/common"
 	"github.com/codedevstem/api2go/src/models"
-	"github.com/codedevstem/api2go/src/utils"
 	"sort"
 	"strings"
 )
@@ -27,7 +26,7 @@ func MapMessageToModel(message models.Message, messageName string) []models.Mapp
 	}
 	sort.Sort(common.ModelProperties(properties))
 	primaryModelMap["properties"] = properties
-	primaryModelMap["structName"] = strings.Title(messageName)
+	primaryModelMap["structName"] = common.Title(messageName)
 	primaryModelMap["packageName"] = "spec"
 	modelMaps = append(modelMaps, models.MappedModel{
 		ModelName: messageName,
@@ -53,7 +52,7 @@ func MapSchemaToModel(schema models.Schema, schemaName string) []models.MappedMo
 	}
 	sort.Sort(common.ModelProperties(properties))
 	primaryModelMap["properties"] = properties
-	primaryModelMap["structName"] = strings.Title(schemaName)
+	primaryModelMap["structName"] = common.Title(schemaName)
 	primaryModelMap["packageName"] = "spec"
 	modelMaps = append(modelMaps, models.MappedModel{
 		ModelName: schemaName,
@@ -78,29 +77,29 @@ func MapPropertiesToModel(propertyName string,
 		}
 	}
 	propertyMap["required"] = isRequired
-	propertyMap["titledAttributeName"] = strings.Title(propertyName)
+	propertyMap["titledAttributeName"] = common.Title(propertyName)
 	propertyMap["attributeName"] = propertyName
 	if property.Type == "" && property.Ref != "" {
 		refParts := strings.Split(property.Ref, "/")
 		propertyMap["attributeType"] = refParts[len(refParts)-1]
 	}
 	if property.Type != "object" && property.Type != "" {
-		attributeType := utils.ParseAttributeType(property.Type, property.Format, property.Items)
+		attributeType := common.ParseAttributeType(property.Type, property.Format, property.Items)
 		switch attributeType {
 		case common.DateTime:
 			{
-				imports = utils.AddImportIfNotExisting(imports, "time")
+				imports = common.AddImportIfNotExisting(imports, "time")
 			}
 		}
 		propertyMap["attributeType"] = attributeType
 	} else if property.Type != "object" && len(property.OneOf) != 0 {
 		oneOfModelProperties := make([]string, 0)
 		oneOfModelProperties, nestedModelMaps = MapOneOfProperty(propertyName, property, nestedModelMaps)
-		nestedModelMaps = append(nestedModelMaps, CreateOneOfModelMap(strings.Title(propertyName), oneOfModelProperties))
-		propertyMap["attributeType"] = strings.Title(propertyName)
+		nestedModelMaps = append(nestedModelMaps, CreateOneOfModelMap(common.Title(propertyName), oneOfModelProperties))
+		propertyMap["attributeType"] = common.Title(propertyName)
 	} else if property.Type == "object" {
 		nestedModelMaps = append(nestedModelMaps, MapSchemaToModel(MapObjectPropertyToSchema(property), propertyName)...)
-		propertyMap["attributeType"] = strings.Title(propertyName)
+		propertyMap["attributeType"] = common.Title(propertyName)
 	}
 	propertyMap["attributeDescription"] = strings.Replace(property.Description, "\n", " ", -1)
 	propertyMap["attributeExample"] = property.Example
@@ -138,18 +137,18 @@ func CreateOneOfModelMap(modelName string, propertyNames []string) models.Mapped
 	propertiesMaps := make([]map[string]interface{}, 0)
 	for _, name := range propertyNames {
 		propertiesMap := make(map[string]interface{}, 0)
-		propertiesMap["titledAttributeName"] = strings.Title(name)
+		propertiesMap["titledAttributeName"] = common.Title(name)
 		propertiesMap["attributeName"] = fmt.Sprintf("%s%s", strings.ToLower(name[:1]), name[1:])
-		propertiesMap["attributeType"] = strings.Title(name)
+		propertiesMap["attributeType"] = common.Title(name)
 		propertiesMap["required"] = false
 		propertiesMaps = append(propertiesMaps, propertiesMap)
 	}
 	model := make(map[string]interface{}, 0)
 	model["properties"] = propertiesMaps
-	model["structName"] = strings.Title(modelName)
+	model["structName"] = common.Title(modelName)
 	model["packageName"] = "spec"
 	return models.MappedModel{
-		ModelName: strings.Title(modelName),
+		ModelName: common.Title(modelName),
 		Model:     model,
 	}
 }
@@ -159,7 +158,7 @@ func MapSchemaToEnum(schema models.Schema, schemaName string) map[string]interfa
 	enums := make([]map[string]string, 0)
 	for _, enum := range schema.Enums {
 		enumConst := make(map[string]string, 0)
-		enumConst["enumConstName"] = schemaName + strings.Title(enum)
+		enumConst["enumConstName"] = schemaName + common.Title(enum)
 		enumConst["enumStringValue"] = enum
 		enums = append(enums, enumConst)
 	}
@@ -167,7 +166,7 @@ func MapSchemaToEnum(schema models.Schema, schemaName string) map[string]interfa
 	modelMap["isEnum"] = true
 	sort.Sort(common.ModelEnums(enums))
 	modelMap["enums"] = enums
-	modelMap["structName"] = strings.Title(schemaName)
+	modelMap["structName"] = common.Title(schemaName)
 	modelMap["packageName"] = "spec"
 	return modelMap
 }

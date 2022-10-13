@@ -1,4 +1,4 @@
-package utils
+package common
 
 func AddImportIfNotExisting(imports []map[string]string, s string) []map[string]string {
 	exists := false
