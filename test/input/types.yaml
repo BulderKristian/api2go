@@ -1,16 +1,16 @@
 openapi: 3.0.3
 info:
-  title: Simple
+  title: Types
   description: Simple
   version: 1.0.0
 servers:
-  - url: 'https://localhost:1212/simple'
+  - url: 'https://localhost:1212/types'
 paths:
   /:
     get:
       responses:
         200:
-          description: Everything is OK in a simple world
+          description: Everything is OK in a type world
 components:
   schemas:
     simple:

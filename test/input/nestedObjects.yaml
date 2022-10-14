@@ -1,0 +1,24 @@
+openapi: 3.0.3
+info:
+  title: NestedObjects
+  description: NestedObjects
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:1212/nested-objects'
+paths:
+  /:
+    get:
+      responses:
+        200:
+          description: Everything is good with nested-objects
+components:
+  schemas:
+    Object:
+      type: object
+      properties:
+        NestedObject:
+          type: object
+          properties:
+            Test:
+              type: string
+

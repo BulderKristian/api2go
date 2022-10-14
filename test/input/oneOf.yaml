@@ -1,0 +1,43 @@
+openapi: 3.0.3
+info:
+  title: OneOf
+  description: OneOf
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:1212/one-of'
+paths:
+  /:
+    get:
+      responses:
+        200:
+          description: All is good with a oneOf
+components:
+  schemas:
+    MultiObject:
+      type: object
+      properties:
+        WithoutDiscriminator:
+          oneOf:
+            - type: object
+              properties:
+                InlineTestProp:
+                  type: string
+            - $ref: "#/components/schemas/ReferencedOneOf"
+        WithDiscriminator:
+          oneOf:
+            - type: object
+              properties:
+                DiscriminatorTestProp:
+                  type: string
+                InlineTestProp:
+                  type: string
+            - $ref: "#/components/schemas/ReferencedOneOf"
+          discriminator:
+            propertyName: DiscriminatorTestProp
+    ReferencedOneOf:
+      type: object
+      properties:
+        DiscriminatorTestProp:
+          type: string
+        ReferencedTestProp:
+          type: string

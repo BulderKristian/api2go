@@ -1,10 +1,17 @@
 # API 2 GO
 
+## Disclaimer
+>This is a personal project, and I work on it when I feel like it.
+I would advice that it is not used for Production.
+
 ## Motivation
 Create a faster, leaner more focused golang api model generator for `swagger`/`openapi`/`asyncapi` for golang
 
-## Docker Example
+## Goal 
+Generating golang models from any valid openapi3 specification
 
+## Docker Example
+### Generating
 ```shell
 docker run \
   -v "${PWD}":/local \

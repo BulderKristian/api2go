@@ -50,7 +50,7 @@ func MapSchemaIntoModelsMap(modelsMap map[string]interface{}, schema Schema, sch
 
 // MapPropertiesIntoModel
 /**
- * Once a property list including one or more property is found,we can transform it,
+ * Once a property list including one or more property is found, we can transform it,
  * based on the information parsed from the spec, to a golang
  */
 func MapPropertiesIntoModel(
@@ -85,6 +85,9 @@ func MapPropertiesIntoModel(
 			anyOfPropertyName := fmt.Sprintf("anyOf%s", common.Title(propertyName))
 			MapSchemaIntoModelsMap(rootModelsMap, MapAnyOfToNewAnyOfSchema(rootModelsMap, property.AnyOf), anyOfPropertyName)
 			attributeType = common.Title(anyOfPropertyName)
+		} else if property.Type == "object" {
+			MapSchemaIntoModelsMap(rootModelsMap, property, common.Title(propertyName))
+			attributeType = common.Title(propertyName)
 		} else {
 			attributeType = common.ParseAttributeType(property.Type, property.Format, property.Items)
 		}
@@ -107,7 +110,7 @@ func MapPropertiesIntoModel(
 
 func addImportIfApplicable(imports []map[string]string, attributeType string) []map[string]string {
 	switch attributeType {
-	case common.DateTime:
+	case common.DateTime, common.DateTimeArray:
 		if !checkIfImportExistsInArrayMap(imports, "time") {
 			imports = append(imports, map[string]string{"importValue": "time"})
 		}
@@ -142,27 +145,27 @@ func MapAllOfToNewAllOfSchema(rootModelsMap map[string]interface{}, allOf []Sche
 }
 
 func MapOneOfToNewOneOfSchema(rootModelsMap map[string]interface{}, oneOf []Schema) Schema {
-	allOfSchema := Schema{}
-	allOfSchema.Type = "object"
+	oneOfSchema := Schema{}
+	oneOfSchema.Type = "object"
 	properties := make(map[string]Schema)
 	for i, schema := range oneOf {
 		propertyName := FindPropertyName(rootModelsMap, &schema, i)
 		properties[propertyName] = schema
 	}
-	allOfSchema.Properties = properties
-	return allOfSchema
+	oneOfSchema.Properties = properties
+	return oneOfSchema
 }
 
 func MapAnyOfToNewAnyOfSchema(rootModelsMap map[string]interface{}, anyOf []Schema) Schema {
-	allOfSchema := Schema{}
-	allOfSchema.Type = "object"
+	anyOfSchema := Schema{}
+	anyOfSchema.Type = "object"
 	properties := make(map[string]Schema)
 	for i, schema := range anyOf {
 		propertyName := FindPropertyName(rootModelsMap, &schema, i)
 		properties[propertyName] = schema
 	}
-	allOfSchema.Properties = properties
-	return allOfSchema
+	anyOfSchema.Properties = properties
+	return anyOfSchema
 }
 
 func FindPropertyName(rootModelsMap map[string]interface{}, schema *Schema, i int) string {

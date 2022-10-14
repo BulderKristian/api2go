@@ -18,15 +18,9 @@ components:
     genericComponent:
       type: object
       properties:
-        genericString:
-          type: string
-        genericInteger:
-          type: integer
-        genericBoolean:
-          type: boolean
-        genericEnum:
-          $ref: '#/components/schemas/genericEnum'
-    genericEnum:
+        Enum:
+          $ref: '#/components/schemas/Enum'
+    Enum:
       type: string
       enum:
         - One

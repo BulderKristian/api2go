@@ -28,3 +28,8 @@ type Schema struct {
 type Responses struct {
 	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
+
+type Discriminator struct {
+	PropertyName string            `json:"propertyName" yaml:"propertyName"`
+	Mapping      map[string]string `json:"mapping" yaml:"mapping"`
+}

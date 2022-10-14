@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 )
 
 const chunkSize = 64000
@@ -75,6 +76,15 @@ func DeepCompareFiles(file1, file2 string) (bool, error) {
 		}
 
 		if !bytes.Equal(b1, b2) {
+			output, err := exec.Command("diff", file1, file2).Output()
+			if err != nil {
+				switch err.(type) {
+				case *exec.ExitError:
+					println(string(output))
+				default:
+					log.Fatal("failed to execute command: ", err)
+				}
+			}
 			return false, nil
 		}
 	}

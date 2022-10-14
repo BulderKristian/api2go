@@ -18,13 +18,25 @@ func Test_GenerateCommand(t *testing.T) {
 		packageName string
 	}{
 		{
-			args:        []string{"--input", "../test/input/generic.yaml", "--output", "../test/actualOutput", "--schema", "openapi3"},
+			args:        []string{"--input", "../test/input/enum.yaml", "--output", "../test/actualOutput", "--schema", "openapi3"},
 			err:         nil,
-			packageName: "generic",
+			packageName: "enum",
 		}, {
-			args:        []string{"--input", "../test/input/simple_attributes.yaml", "--output", "../test/actualOutput", "--schema", "openapi3"},
+			args:        []string{"--input", "../test/input/types.yaml", "--output", "../test/actualOutput", "--schema", "openapi3"},
 			err:         nil,
-			packageName: "generic",
+			packageName: "types",
+		}, {
+			args:        []string{"--input", "../test/input/lists.yaml", "--output", "../test/actualOutput", "--schema", "openapi3"},
+			err:         nil,
+			packageName: "lists",
+		}, {
+			args:        []string{"--input", "../test/input/nestedObjects.yaml", "--output", "../test/actualOutput", "--schema", "openapi3"},
+			err:         nil,
+			packageName: "nestedObjects",
+		}, {
+			args:        []string{"--input", "../test/input/oneOf.yaml", "--output", "../test/actualOutput", "--schema", "openapi3"},
+			err:         nil,
+			packageName: "oneOf",
 		},
 	}
 

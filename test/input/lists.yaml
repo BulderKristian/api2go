@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: Lists
+  description: Lists
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:1212/lists'
+paths:
+  /:
+    get:
+      responses:
+        200:
+          description: All is good in list-land
+components:
+  schemas:
+    Lists:
+      type: object
+      properties:
+        Int32List:
+          type: array
+          items:
+            type: integer
+            format: int32
+        Int64List:
+          type: array
+          items:
+            type: integer
+            format: int64
+        FloatList:
+          type: array
+          items:
+            type: number
+            format: float
+        DoubleList:
+          type: array
+          items:
+            type: number
+            format: double
+        StringList:
+          type: array
+          items:
+            type: string
+        ByteList:
+          type: array
+          items:
+            type: string
+            format: byte
+        BinaryList:
+          type: array
+          items:
+            type: string
+            format: binary
+        BooleanList:
+          type: array
+          items:
+            type: boolean
+        DateList:
+          type: array
+          items:
+            type: string
+            format: date
+        DateTimeList:
+          type: array
+          items:
+            type: string
+            format: date-time
+        PasswordList:
+          type: array
+          items:
+            type: string
+            format: password
